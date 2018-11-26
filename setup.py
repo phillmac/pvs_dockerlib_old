@@ -2,7 +2,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
-    name='pvs_dockerlib',  
+    name='pvs-dockerlib',  
     version='0.1',
     author="Peel Valley Softwware",
     author_email="info@peelvalley.com.au",
