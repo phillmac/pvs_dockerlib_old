@@ -4,13 +4,14 @@ import docker, threading, os
 
 
 
-def create_client():
-    _config = DockerConfig()
+def create_client(use_local_socket=False):
+    _config = DockerConfig(use_local_socket)
     return docker.DockerClient(
         base_url = _config.base_url(),
         version = _config.version(),
         timeout = _config.timeout()
     )
+
 
 def docker_run_settings(docker_client, docker_settings):
     if 'ports' in docker_settings:
@@ -86,7 +87,6 @@ def container_get_status(docker_client, docker_settings):
     except NotFound:
         return 'CONTAINER_NOT_FOUND'
 
-
 def docker_logs_settings(docker_client, docker_settings):
     container_name = docker_settings['name']
     try:
@@ -94,7 +94,6 @@ def docker_logs_settings(docker_client, docker_settings):
         return container.logs(stdout=True, stderr=True, tail=10)
     except NotFound:
         return 'Container not found'
-
 
 def wait_container_status(docker_client, docker_settings, condition, wait_ready, status_achieved, timeout=10, tries=0):
     
@@ -121,8 +120,6 @@ def wait_container_status(docker_client, docker_settings, condition, wait_ready,
         else:
             raise ex
 
-
-
 def find_container(docker_client, container_name):
     print('Finding container: ', container_name)
     if len(docker_client.containers.list(all=True, sparse=True, filters= {'name':container_name})) > 0:
@@ -133,11 +130,11 @@ def find_container(docker_client, container_name):
 
 class DockerConfig():
 
-    def __init__(self):
-        pass
+    def __init__(self, use_local_socket):
+        self.use_local_socket = use_local_socket
 
     def base_url(self):
-        if 'DOCKER_BASE_URL' in os.environ and not os.environ['DOCKER_BASE_URL'] == '' :
+        if not self.use_local_socket and 'DOCKER_BASE_URL' in os.environ and not os.environ['DOCKER_BASE_URL'] == '' :
             return os.environ['DOCKER_BASE_URL']
         else:
             return 'unix:///var/run/docker.sock'
