@@ -95,12 +95,13 @@ def docker_logs_settings(docker_client, docker_settings):
     except NotFound:
         return 'Container not found'
 
-def wait_container_status(docker_client, docker_settings, condition, wait_ready, status_achieved, timeout=10, tries=0):
+def wait_container_status(docker_client, docker_settings, condition, wait_ready, status_achieved, timeout=10, max_tries=0):
     
     if not status_achieved:
         raise ValueError('status_achieved must not be null')
 
     container_name = docker_settings['name']
+    tries = 0
     try:
         container = find_container(docker_client, container_name)
 
@@ -109,7 +110,7 @@ def wait_container_status(docker_client, docker_settings, condition, wait_ready,
         container.wait(timeout=timeout,condition=condition)
         status_achieved.set()
     except ConnectionError as ex:
-        if tries < 3:
+        if tries < max_tries:
             tries += 1
             wait_container_status(docker_client, docker_settings, condition, wait_ready, status_achieved, timeout, tries)
         else:
