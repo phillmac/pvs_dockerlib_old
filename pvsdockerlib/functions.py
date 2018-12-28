@@ -60,7 +60,7 @@ def docker_restart_settings(docker_client, docker_settings):
         docker_run_settings(docker_client, docker_settings)
         return True
 
-def docker_remove_settings(docker_client, docker_settings):
+def docker_remove_settings(docker_client, use_local_socket, docker_settings):
     container_name = docker_settings['name']
     print('Finding container: ', container_name)
     if len(docker_client.containers.list(all=True, sparse=True, filters= {'name':container_name})) > 0:
@@ -69,7 +69,7 @@ def docker_remove_settings(docker_client, docker_settings):
             print('Found container')
             event = threading.Event()
             wait_ready = threading.Event()
-            t = threading.Thread(target=wait_container_status, args = (create_client(), docker_settings,'removed',wait_ready,event,10))
+            t = threading.Thread(target=wait_container_status, args = (create_client(use_local_socket), docker_settings,'removed',wait_ready,event,10))
             t.daemon = True
             t.start()
             wait_ready.wait()
