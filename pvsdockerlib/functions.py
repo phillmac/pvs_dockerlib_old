@@ -95,7 +95,7 @@ def docker_logs_settings(docker_client, docker_settings):
     except NotFound:
         return 'Container not found'
 
-def wait_container_status(docker_client, docker_settings, condition, wait_ready, status_achieved, timeout=10, max_tries=0):
+def wait_container_status(docker_client, docker_settings, condition, wait_ready, status_achieved, timeout=10, max_tries=1):
     
     if not status_achieved:
         raise ValueError('status_achieved must not be null')
