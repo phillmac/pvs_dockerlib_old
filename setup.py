@@ -3,7 +3,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
     name='pvs-dockerlib',  
-    version='0.0.3',
+    version='0.0.4',
     author="Peel Valley Softwware",
     author_email="info@peelvalley.com.au",
     description="Custom docker client wrapper",
